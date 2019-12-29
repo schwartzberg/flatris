@@ -1,5 +1,5 @@
-# Node.js with React
-# Build a Node.js project that uses React.
+# Node.js with gulp
+# Build a Node.js project using the gulp task runner.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -17,8 +17,4 @@ steps:
 
 - script: |
     npm install
-    npm run build
-  displayName: 'npm install and build'
-
-- task: PublishBuildArtifacts@1
- 
+  displayName: 'npm install and run gulp'
