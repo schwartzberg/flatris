@@ -2,7 +2,7 @@
 
 import admin from 'firebase-admin';
 
-import type { Stats } from 'shared/types/state';
+import type { Stats, DailyStats } from 'shared/types/state';
 
 export async function getStats(): Promise<Stats> {
   const db = getDb();
@@ -24,6 +24,20 @@ export async function getStats(): Promise<Stats> {
   }
 }
 
+export async function getDailyStats(): Promise<DailyStats> {
+  const db = getDb();
+  if (!db) {
+    return {};
+  } else {
+    const gameRef = db.ref('dailyGameCounts');
+    const gameRes = await gameRef.once('value');
+    const turnRef = db.ref('dailyTurnCounts');
+    const turnRes = await turnRef.once('value');
+
+    return prepareDailyStats(gameRes.val(), turnRes.val());
+  }
+}
+
 export function onStatsChange(changeHandler: (stats: Stats) => void) {
   const db = getDb();
   if (db) {
@@ -40,10 +54,12 @@ export function incrementUserCount() {
 
 export function incrementGameCount() {
   incrementCount('games');
+  incrementDailyGameCount();
 }
 
 export function incrementTurnCount() {
   incrementCount('turns');
+  incrementDailyTurnCount();
 }
 
 export function incrementLineCount(lines: number) {
@@ -112,6 +128,22 @@ function incrementCount(collection: string, by = 1) {
   }
 }
 
+function incrementDailyGameCount() {
+  const db = getDb();
+  if (db) {
+    const ref = db.ref('dailyGameCounts').child(getTodaysDate());
+    ref.transaction(curCount => (curCount === null ? 1 : curCount + 1));
+  }
+}
+
+function incrementDailyTurnCount() {
+  const db = getDb();
+  if (db) {
+    const ref = db.ref('dailyTurnCounts').child(getTodaysDate());
+    ref.transaction(curCount => (curCount === null ? 1 : curCount + 1));
+  }
+}
+
 function prepareStats(rawStats) {
   const {
     actionAcc,
@@ -133,4 +165,17 @@ function prepareStats(rawStats) {
     lines,
     seconds
   };
+}
+
+function prepareDailyStats(gameCounts, turnCounts) {
+  const days = Object.keys(gameCounts);
+  const totalCounts = {};
+  days.forEach(day => {
+    totalCounts[day] = gameCounts[day] + (turnCounts[day] || 0);
+  });
+  return totalCounts;
+}
+
+function getTodaysDate() {
+  return new Date().toISOString().slice(0, 10);
 }
