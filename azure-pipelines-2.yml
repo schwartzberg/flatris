@@ -22,6 +22,12 @@ steps:
 
 # Publish Build Artifacts
 # Publish build artifacts to Azure Pipelines/TFS or a file share
+
+- task: CopyFiles@2
+  inputs:
+    Contents: 'build/**' # Pull the build directory (React)
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
