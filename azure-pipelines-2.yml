@@ -23,14 +23,13 @@ steps:
 # Publish Build Artifacts
 # Publish build artifacts to Azure Pipelines/TFS or a file share
 
-- task: CopyFiles@2
+- task: AzureRmWebAppDeployment@4
   inputs:
-    Contents: 'build/**' # Pull the build directory (React)
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'drop' 
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Visual Studio Enterprise (6064f5b1-01a1-4bdb-b038-fcbe2d3a7d65)'
+    appType: 'webAppLinux'
+    WebAppName: 'Flatrix-May-2020'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/*.zip'
+
 
 
