@@ -29,7 +29,7 @@ steps:
     azureSubscription: 'Visual Studio Enterprise (6064f5b1-01a1-4bdb-b038-fcbe2d3a7d65)'
     appType: 'webAppLinux'
     WebAppName: 'Flatrix-May-2020'
-    packageForLinux: '$(System.DefaultWorkingDirectory)/*.zip'
+    packageForLinux: $(System.DefaultWorkingDirectory)/**/*.zip
 
 
 
